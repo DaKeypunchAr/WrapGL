@@ -1,4 +1,11 @@
-sources = ['core.cpp', 'window.cpp', 'glfw.cpp']
+sources = [
+  'core.cpp',
+  'window.cpp',
+  'glfw.cpp',
+  'vertex_array.cpp',
+  'vertex_buffer.cpp',
+  'shader_program.cpp',
+]
 
 glfw_dep = dependency('glfw3', fallback: ['glfw', 'glfw_dep'])
 glad_dep = dependency('glad')
