@@ -8,11 +8,22 @@ enum class DataType {
 };
 
 struct Attribute {
+  unsigned int count = 0;
+  unsigned int bindingIndex = 0;
+  unsigned int relativeOffset = 0;
   DataType type;
-  bool isNormalized;
-  unsigned int count;
-  unsigned int bindingIndex;
-  unsigned int relativeOffset;
+  bool isNormalized = false;
+
+  constexpr static Attribute create(DataType type, unsigned int count,
+                                    unsigned int bindingIndex = 0,
+                                    unsigned int relativeOffset = 0,
+                                    bool isNormalized = false) {
+    return Attribute{.count = count,
+                     .bindingIndex = bindingIndex,
+                     .relativeOffset = relativeOffset,
+                     .type = type,
+                     .isNormalized = isNormalized};
+  }
 };
 
 class VertexArray {
@@ -20,7 +31,7 @@ private:
   unsigned int m_VertexArrayId;
 
 private:
-  VertexArray(unsigned int rawId);
+  VertexArray(const unsigned int rawId);
 
 public:
   static VertexArray create();

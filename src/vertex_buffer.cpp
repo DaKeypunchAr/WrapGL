@@ -1,7 +1,8 @@
 #include "vertex_buffer.hpp"
 #include "glad/glad.h"
 
-GL::VertexBuffer::VertexBuffer(unsigned int rawId) : m_VertexBufferId(rawId) {}
+GL::VertexBuffer::VertexBuffer(const unsigned int rawId)
+    : m_VertexBufferId(rawId) {}
 
 GL::VertexBuffer GL::VertexBuffer::create() {
   unsigned int rawId;
@@ -9,10 +10,8 @@ GL::VertexBuffer GL::VertexBuffer::create() {
   return GL::VertexBuffer(rawId);
 }
 
-GL::VertexBuffer::~VertexBuffer() { glDeleteBuffers(1, &m_VertexBufferId); }
-
-constexpr unsigned int glHintFromEnums(GL::BufferFrequencyHint f,
-                                       GL::BufferAccessNatureHint a) {
+constexpr unsigned int glHintFromEnums(const GL::BufferFrequencyHint f,
+                                       const GL::BufferAccessNatureHint a) {
   switch (f) {
   case GL::BufferFrequencyHint::STREAM:
     switch (a) {
@@ -44,21 +43,58 @@ constexpr unsigned int glHintFromEnums(GL::BufferFrequencyHint f,
   }
 }
 
+GL::VertexBuffer
+GL::VertexBuffer::createAndAllocate(const std::vector<float> &data,
+                                    const GL::BufferFrequencyHint freq,
+                                    const GL::BufferAccessNatureHint acc) {
+  unsigned int rawId;
+  glCreateBuffers(1, &rawId);
+  glNamedBufferData(rawId, sizeof(float) * data.size(), data.data(),
+                    glHintFromEnums(freq, acc));
+  return GL::VertexBuffer(rawId);
+}
+GL::VertexBuffer
+GL::VertexBuffer::createAndAllocate(const unsigned int bufferSizeInBytes,
+                                    const GL::BufferFrequencyHint freq,
+                                    const GL::BufferAccessNatureHint acc) {
+  unsigned int rawId;
+  glCreateBuffers(1, &rawId);
+  glNamedBufferData(rawId, bufferSizeInBytes, nullptr,
+                    glHintFromEnums(freq, acc));
+  return GL::VertexBuffer(rawId);
+}
+
+GL::VertexBuffer::~VertexBuffer() { glDeleteBuffers(1, &m_VertexBufferId); }
+
 void GL::VertexBuffer::update(const std::vector<float> &data,
-                              GL::BufferFrequencyHint freq,
-                              GL::BufferAccessNatureHint acc) const {
+                              const unsigned int offsetInBytes) const {
+  glNamedBufferSubData(m_VertexBufferId, offsetInBytes,
+                       sizeof(float) * data.size(), data.data());
+}
+
+void GL::VertexBuffer::allocateBuffer(
+    const std::vector<float> &data, const GL::BufferFrequencyHint freq,
+    const GL::BufferAccessNatureHint acc) const {
   glNamedBufferData(m_VertexBufferId, sizeof(float) * data.size(), data.data(),
                     glHintFromEnums(freq, acc));
 }
 
-GL::Binding::Binding(unsigned int vbIdx, unsigned int bindingIdx,
-                     unsigned int offset, unsigned int stride)
+void GL::VertexBuffer::allocateBuffer(
+    const unsigned int bufferSizeInBytes, const GL::BufferFrequencyHint freq,
+    const GL::BufferAccessNatureHint acc) const {
+  glNamedBufferData(m_VertexBufferId, bufferSizeInBytes, nullptr,
+                    glHintFromEnums(freq, acc));
+}
+
+GL::Binding::Binding(const unsigned int vbIdx, const unsigned int bindingIdx,
+                     const unsigned int offset, const unsigned int stride)
     : m_VertexBufferId(vbIdx), m_BindingIndex(bindingIdx), m_Offset(offset),
       m_Stride(stride) {}
 
 GL::Binding GL::Binding::create(const VertexBuffer &vb,
-                                unsigned int bindingIndex, unsigned int offset,
-                                unsigned int stride) {
+                                const unsigned int bindingIndex,
+                                const unsigned int offset,
+                                const unsigned int stride) {
   return Binding(vb.m_VertexBufferId, bindingIndex, offset, stride);
 }
 

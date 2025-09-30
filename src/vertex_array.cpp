@@ -2,7 +2,8 @@
 #include "glad/glad.h"
 #include "vertex_buffer.hpp"
 
-GL::VertexArray::VertexArray(unsigned int rawId) : m_VertexArrayId(rawId) {}
+GL::VertexArray::VertexArray(const unsigned int rawId)
+    : m_VertexArrayId(rawId) {}
 
 GL::VertexArray GL::VertexArray::create() {
   unsigned int rawId;
@@ -14,14 +15,14 @@ GL::VertexArray::~VertexArray() { glDeleteVertexArrays(1, &m_VertexArrayId); }
 
 void GL::VertexArray::select() const { glBindVertexArray(m_VertexArrayId); }
 
-constexpr unsigned int glType(GL::DataType type) {
+constexpr unsigned int glType(const GL::DataType type) {
   switch (type) {
   case GL::DataType::F32:
     return GL_FLOAT;
   }
 }
 
-constexpr unsigned int glBool(bool b) { return b ? GL_TRUE : GL_FALSE; }
+constexpr unsigned int glBool(const bool b) { return b ? GL_TRUE : GL_FALSE; }
 
 void GL::VertexArray::setFormat(
     const std::vector<GL::Attribute> &attributes) const {

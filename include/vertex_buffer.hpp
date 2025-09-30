@@ -17,19 +17,37 @@ private:
   unsigned int m_VertexBufferId;
 
 private:
-  VertexBuffer(unsigned int rawId);
+  VertexBuffer(const unsigned int rawId);
 
 public:
   static VertexBuffer create();
+  static VertexBuffer createAndAllocate(
+      const std::vector<float> &data,
+      const GL::BufferFrequencyHint freq = GL::BufferFrequencyHint::STATIC,
+      const GL::BufferAccessNatureHint acc = GL::BufferAccessNatureHint::DRAW);
+  static VertexBuffer createAndAllocate(
+      const unsigned int bufferSizeInBytes,
+      const GL::BufferFrequencyHint freq = GL::BufferFrequencyHint::STATIC,
+      const GL::BufferAccessNatureHint acc = GL::BufferAccessNatureHint::DRAW);
 
 public:
   VertexBuffer() = delete;
   ~VertexBuffer();
 
-  void update(
+  void update(const std::vector<float> &data,
+              const unsigned int offsetInBytes = 0) const;
+
+  void allocateBuffer(
       const std::vector<float> &data,
-      GL::BufferFrequencyHint freq = GL::BufferFrequencyHint::STATIC,
-      GL::BufferAccessNatureHint acc = GL::BufferAccessNatureHint::DRAW) const;
+      const GL::BufferFrequencyHint freq = GL::BufferFrequencyHint::STATIC,
+      const GL::BufferAccessNatureHint acc =
+          GL::BufferAccessNatureHint::DRAW) const;
+
+  void allocateBuffer(
+      const unsigned int bufferSizeInBytes,
+      const GL::BufferFrequencyHint freq = GL::BufferFrequencyHint::STATIC,
+      const GL::BufferAccessNatureHint acc =
+          GL::BufferAccessNatureHint::DRAW) const;
 
   friend Binding;
 };
@@ -42,12 +60,12 @@ private:
   unsigned int m_Stride;
 
 private:
-  Binding(unsigned int vbId, unsigned int bindingIdx, unsigned int offset,
-          unsigned int stride);
+  Binding(const unsigned int vbId, const unsigned int bindingIdx,
+          const unsigned int offset, const unsigned int stride);
 
 public:
-  static Binding create(const VertexBuffer &vb, unsigned int bindingIndex,
-                        unsigned int offset, unsigned int stride);
+  static Binding create(const VertexBuffer &vb, const unsigned int bindingIndex,
+                        const unsigned int offset, const unsigned int stride);
 
 public:
   Binding() = delete;

@@ -1,14 +1,15 @@
 #include "shader_program.hpp"
 #include "glad/glad.h"
 #include <cstdlib>
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
 
-GL::ShaderProgram::ShaderProgram(unsigned int linkedShaderProgramId)
+GL::ShaderProgram::ShaderProgram(const unsigned int linkedShaderProgramId)
     : m_ShaderProgramId(linkedShaderProgramId) {}
 
-void GL::ShaderProgram::compileShader(unsigned int shaderId) {
+void GL::ShaderProgram::compileShader(const unsigned int shaderId) {
   glCompileShader(shaderId);
 
   int compilationStatus;
@@ -25,7 +26,7 @@ void GL::ShaderProgram::compileShader(unsigned int shaderId) {
   }
 }
 
-void GL::ShaderProgram::linkProgram(unsigned int programId) {
+void GL::ShaderProgram::linkProgram(const unsigned int programId) {
   glLinkProgram(programId);
 
   int linkingStatus;
@@ -90,6 +91,57 @@ GL::ShaderProgram::createFromSource(const std::string_view &vsSource,
   return GL::ShaderProgram(programId);
 }
 
+GL::ShaderProgram
+GL::ShaderProgram::createFromFilePath(const std::filesystem::path &vsPath,
+                                      const std::filesystem::path &fsPath) {
+  std::string vsSrc, fsSrc;
+  std::ifstream fileReader(vsPath);
+  if (!fileReader.is_open()) {
+    std::string errMsg = "Failed to open file: ";
+    errMsg += vsPath.string();
+    errMsg += "\nThe file was passed to be used as vertex shader!";
+    throw std::runtime_error(errMsg);
+  }
+  for (std::string line; std::getline(fileReader, line); vsSrc += '\n')
+    vsSrc += line;
+
+  fileReader.close();
+  fileReader.open(fsPath);
+
+  if (!fileReader.is_open()) {
+    std::string errMsg = "Failed to open file: ";
+    errMsg += vsPath.string();
+    errMsg += "\nThe file was passed to be used as fragment shader!";
+    throw std::runtime_error(errMsg);
+  }
+
+  for (std::string line; std::getline(fileReader, line); fsSrc += '\n')
+    fsSrc += line;
+
+  return ShaderProgram::createFromSource(vsSrc, fsSrc);
+}
+
+GL::ShaderProgram
+GL::ShaderProgram::createFromFolder(const std::filesystem::path &folderPath) {
+  return createFromFilePath(folderPath / "vertex.glsl",
+                            folderPath / "fragment.glsl");
+}
+
 GL::ShaderProgram::~ShaderProgram() { glDeleteProgram(m_ShaderProgramId); }
 
 void GL::ShaderProgram::select() const { glUseProgram(m_ShaderProgramId); }
+
+int GL::ShaderProgram::getUniformLocation(
+    const std::string_view &uniformName) const {
+  return glGetUniformLocation(m_ShaderProgramId, uniformName.data());
+}
+
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const int value) const {
+  glUniform1i(uniformLocation, value);
+}
+
+void GL::ShaderProgram::setUniform(const std::string_view &uniformName,
+                                   const int value) const {
+  setUniform(getUniformLocation(uniformName), value);
+}
