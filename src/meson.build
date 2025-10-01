@@ -23,3 +23,5 @@ wrapgl_dep = declare_dependency(
   link_with: wrapgl,
   include_directories: include_directories('../include'),
 )
+
+meson.override_dependency('wrapgl', wrapgl_dep)
