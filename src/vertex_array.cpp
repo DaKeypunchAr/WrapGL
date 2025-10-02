@@ -1,6 +1,6 @@
-#include "vertex_array.hpp"
+#include "wrapgl/vertex_array.hpp"
 #include "glad/glad.h"
-#include "vertex_buffer.hpp"
+#include "wrapgl/vertex_buffer.hpp"
 
 GL::VertexArray::VertexArray(const unsigned int rawId)
     : m_VertexArrayId(rawId) {}

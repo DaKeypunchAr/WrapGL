@@ -1,4 +1,4 @@
-#include "vertex_buffer.hpp"
+#include "wrapgl/vertex_buffer.hpp"
 #include "glad/glad.h"
 
 GL::VertexBuffer::VertexBuffer(const unsigned int rawId)

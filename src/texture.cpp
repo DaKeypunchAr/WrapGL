@@ -1,5 +1,5 @@
 #define STB_IMAGE_IMPLEMENTATION
-#include "texture.hpp"
+#include "wrapgl/texture.hpp"
 #include "glad/glad.h"
 
 GL::Texture2D::Texture2D(unsigned int textureId) : m_TextureId(textureId) {}

@@ -1,4 +1,4 @@
-#include "shader_program.hpp"
+#include "wrapgl/shader_program.hpp"
 #include "glad/glad.h"
 #include <cstdlib>
 #include <fstream>

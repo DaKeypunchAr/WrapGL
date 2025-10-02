@@ -1,8 +1,8 @@
 #define GLFW_INCLUDE_NONE
-#include "window.hpp"
+#include "wrapgl/window.hpp"
+#include "wrapgl/glfw.hpp"
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
-#include <glfw.hpp>
 #include <iostream>
 #include <stdexcept>
 
