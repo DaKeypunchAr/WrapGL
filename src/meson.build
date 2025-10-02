@@ -1,5 +1,4 @@
 sources = [
-  'core.cpp',
   'texture.cpp',
   'window.cpp',
   'glfw.cpp',
