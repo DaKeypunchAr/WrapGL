@@ -1,4 +1,4 @@
-#include "core.hpp"
+#include "wrapgl_core.hpp" // IWYU pragma: keep
 
 int main() {
   GLFW::initialize();

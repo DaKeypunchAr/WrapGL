@@ -1,5 +1,4 @@
-#include "core.hpp" // IWYU pragma: keep
-#include "vertex_array.hpp"
+#include "wrapgl_core.hpp" // IWYU pragma: keep
 
 const std::filesystem::path pathToProject =
     "/home/dakeypunchar/documents/cpp-projects/wrapgl";

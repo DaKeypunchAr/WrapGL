@@ -1,10 +1,4 @@
-#include "texture.hpp"
-#define STB_IMAGE_IMPLEMENTATION
-#include "core.hpp" // IWYU pragma: keep
-#include "glad/glad.h"
-#include "stbi_image.hpp"
-#include "vertex_array.hpp"
-#include "vertex_buffer.hpp"
+#include "wrapgl_core.hpp" // IWYU pragma: keep
 
 const std::filesystem::path pathToProject =
     "/home/dakeypunchar/documents/cpp-projects/wrapgl";
