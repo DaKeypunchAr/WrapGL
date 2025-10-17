@@ -161,6 +161,8 @@ public:
   bool isSelected() const;
   void clear(const glm::vec4 &color) const;
   std::string_view getTitle() const;
+
+  GLFWwindow *getRawPointer() const { return m_WindowHandle; }
 };
 
 #endif
