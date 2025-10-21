@@ -1,13 +1,20 @@
+#include <stdexcept>
 #define STB_IMAGE_IMPLEMENTATION
-#include "wrapgl/texture.hpp"
 #include "glad/glad.h"
+#include "wrapgl/texture.hpp"
 
 GL::Texture2D::Texture2D(unsigned int textureId) : m_TextureId(textureId) {}
 
 GL::Texture2D::~Texture2D() { glDeleteTextures(1, &m_TextureId); }
 
 constexpr unsigned int glInternalFormat(const GL::TextureFormat format) {
-  return (format == GL::TextureFormat::RGBA8) * GL_RGBA8;
+  if (format == GL::TextureFormat::BGR8 || format == GL::TextureFormat::BGRA8)
+    throw std::runtime_error("BGR8 and BGRA8 formats are not accepted to be "
+                             "stored in the OPENGL texture");
+  return (format == GL::TextureFormat::RGBA8) * GL_RGBA8 +
+         (format == GL::TextureFormat::RGB8) * GL_RGB8 +
+         (format == GL::TextureFormat::RG8) * GL_RG8 +
+         (format == GL::TextureFormat::R8) * GL_R8;
 }
 
 GL::Texture2D GL::Texture2D::create(const glm::uvec2 dimensions,
@@ -110,11 +117,21 @@ void GL::Texture2D::updateMagFilter(const GL::MagFilterMode mode) const {
 }
 
 constexpr unsigned int glExternalFormat(const GL::TextureFormat format) {
-  return (format == GL::TextureFormat::RGBA8) * GL_RGBA;
+  return (format == GL::TextureFormat::RGBA8) * GL_RGBA +
+         (format == GL::TextureFormat::RGB8) * GL_RGB +
+         (format == GL::TextureFormat::RG8) * GL_RG +
+         (format == GL::TextureFormat::R8) * GL_RED +
+         (format == GL::TextureFormat::BGR8) * GL_BGR +
+         (format == GL::TextureFormat::BGRA8) * GL_BGRA;
 }
 
 constexpr unsigned int glFormatType(const GL::TextureFormat format) {
-  return (format == GL::TextureFormat::RGBA8) * GL_UNSIGNED_BYTE;
+  return (format == GL::TextureFormat::RGBA8 ||
+          format == GL::TextureFormat::RGB8 ||
+          format == GL::TextureFormat::RG8 || format == GL::TextureFormat::R8 ||
+          format == GL::TextureFormat::BGR8 ||
+          format == GL::TextureFormat::BGRA8) *
+         GL_UNSIGNED_BYTE;
 }
 
 void GL::Texture2D::update(const void *const textureData,

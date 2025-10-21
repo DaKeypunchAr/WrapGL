@@ -56,7 +56,7 @@ public:
 } // namespace STB
 
 namespace GL {
-enum class TextureFormat { RGBA8 };
+enum class TextureFormat { RGBA8, R8, RG8, RGB8, BGR8, BGRA8 };
 enum class WrapDirection { S, T, R };
 enum class WrapMode {
   CLAMP_TO_EDGE,
