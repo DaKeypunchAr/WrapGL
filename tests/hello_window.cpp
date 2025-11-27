@@ -1,12 +1,13 @@
 #include "wrapgl_core.hpp" // IWYU pragma: keep
 
 int main() {
-  GLFW::initialize();
   Window window = Window::create(glm::uvec2(200, 200), "Hello Window");
 
-  glm::vec4 windowColor = glm::vec4(0.2f, 0.5f, 0.8f, 1.0f);
+  const glm::vec3 windowColor = glm::vec3(0.2f, 0.5f, 0.8f);
+  GL::Renderer::setClearColor(windowColor);
+
   while (!window.shouldClose()) {
-    window.clear(windowColor);
+    GL::Renderer::clear();
 
     if (window.isKeyPressed(Key::Escape)) {
       window.triggerClose();

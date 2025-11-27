@@ -332,7 +332,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 Window Window::create(const glm::uvec2 dimensions,
                       const std::string_view &title) {
   if (!GLFW::isInitialized()) {
-    std::runtime_error("GLFW is not initialized!");
+    GLFW::initialize();
   }
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
@@ -345,9 +345,9 @@ Window Window::create(const glm::uvec2 dimensions,
 Window::Window(const glm::uvec2 dimensions, const std::string_view &title)
     : m_WindowHandle(glfwCreateWindow(dimensions.x, dimensions.y, title.data(),
                                       nullptr, nullptr)),
-      m_Title(title) {
+      m_Title(title), m_InitialDimension(dimensions) {
   if (!m_WindowHandle) {
-    glfwTerminate();
+    GLFW::terminate();
     throw std::runtime_error("GLFW failed to create a window!");
   }
   glfwSetFramebufferSizeCallback(m_WindowHandle, framebuffer_size_callback);
@@ -391,9 +391,8 @@ bool Window::isKeyPressed(const Key key) const {
   return glfwGetKey(m_WindowHandle, glfwKey(key)) == GLFW_PRESS;
 }
 
-std::string_view Window::getTitle() const { return m_Title; }
-
-void Window::clear(const glm::vec4 &color) const {
-  glClearColor(color.r, color.g, color.b, color.a);
-  glClear(GL_COLOR_BUFFER_BIT);
+glm::uvec2 Window::getCurrentDimension() const {
+  int w, h;
+  glfwGetWindowSize(m_WindowHandle, &w, &h);
+  return glm::uvec2(w, h);
 }

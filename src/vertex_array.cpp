@@ -1,6 +1,7 @@
 #include "wrapgl/vertex_array.hpp"
 #include "glad/glad.h"
 #include "wrapgl/vertex_buffer.hpp"
+#include <stdexcept>
 
 GL::VertexArray::VertexArray(const unsigned int rawId)
     : m_VertexArrayId(rawId) {}
@@ -20,6 +21,8 @@ constexpr unsigned int glType(const GL::DataType type) {
   case GL::DataType::F32:
     return GL_FLOAT;
   }
+
+  throw std::runtime_error("Unknown Type");
 }
 
 constexpr unsigned int glBool(const bool b) { return b ? GL_TRUE : GL_FALSE; }

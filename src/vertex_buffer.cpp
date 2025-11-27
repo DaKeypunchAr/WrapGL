@@ -1,5 +1,6 @@
 #include "wrapgl/vertex_buffer.hpp"
 #include "glad/glad.h"
+#include <stdexcept>
 
 GL::VertexBuffer::VertexBuffer(const unsigned int rawId)
     : m_VertexBufferId(rawId) {}
@@ -41,6 +42,7 @@ constexpr unsigned int glHintFromEnums(const GL::BufferFrequencyHint f,
       return GL_DYNAMIC_READ;
     }
   }
+  throw std::runtime_error("Unknown Hint");
 }
 
 GL::VertexBuffer

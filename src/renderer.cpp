@@ -8,7 +8,14 @@ constexpr unsigned int glMode(const GL::RenderMode mode) {
   case GL::RenderMode::TRIANGLE_STRIP:
     return GL_TRIANGLE_STRIP;
   }
+  throw std::runtime_error("Unknown Mode");
 }
+
+void GL::Renderer::setClearColor(const glm::vec4 color) {
+  glClearColor(color.r, color.g, color.b, color.a);
+}
+
+void GL::Renderer::clear() { glClear(GL_COLOR_BUFFER_BIT); }
 
 void GL::Renderer::drawArrays(const VertexArray &va,
                               const ShaderProgram &shader,

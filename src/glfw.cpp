@@ -6,19 +6,22 @@
 void glfwErrorCallback(int errorCode, const char *description) {
   std::cout << "GLFW Error (" << errorCode << "): " << description << '\n';
 }
-bool GLFW::s_Initialized = false;
 
-bool GLFW::isInitialized() { return s_Initialized; }
+GLFWWrapper GLFW::s_GLFW;
 
-void GLFW::initialize() {
+void GLFWWrapper::init() {
+  if (m_Initialized) {
+    throw std::runtime_error(
+        "GLFW is already initialized! Only initialize after terminating!");
+  }
   glfwSetErrorCallback(glfwErrorCallback);
   if (glfwInit() == GLFW_FALSE) {
     throw std::runtime_error("GLFW failed to initialize!");
   }
-  s_Initialized = true;
+  m_Initialized = true;
 }
 
-void GLFW::terminate() {
+void GLFWWrapper::terminate() {
   glfwTerminate();
-  s_Initialized = false;
+  m_Initialized = false;
 }

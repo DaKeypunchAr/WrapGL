@@ -138,6 +138,7 @@ class Window {
 private:
   GLFWwindow *m_WindowHandle;
   std::string m_Title;
+  glm::uvec2 m_InitialDimension;
 
 private:
   Window(const glm::uvec2 dimensions, const std::string_view &title);
@@ -159,10 +160,17 @@ public:
   bool isKeyPressed(const Key key) const;
   void select() const;
   bool isSelected() const;
-  void clear(const glm::vec4 &color) const;
-  std::string_view getTitle() const;
+  inline std::string_view getTitle() const { return m_Title; }
+  glm::uvec2 getCurrentDimension() const;
+  inline unsigned int getCurrentWidth() const {
+    return getCurrentDimension().x;
+  }
+  inline unsigned int getCurrentHeight() const {
+    return getCurrentDimension().y;
+  }
+  inline glm::uvec2 getInitialDimension() const { return m_InitialDimension; }
 
-  GLFWwindow *getRawPointer() const { return m_WindowHandle; }
+  inline GLFWwindow *getRawPointer() const { return m_WindowHandle; }
 };
 
 #endif

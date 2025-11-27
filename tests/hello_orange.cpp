@@ -1,9 +1,9 @@
+#include "wrapgl/renderer.hpp"
 #include "wrapgl_core.hpp" // IWYU pragma: keep
 
 const std::filesystem::path pathToProject =
     "/home/dakeypunchar/documents/cpp-projects/wrapgl";
 int main() {
-  GLFW::initialize();
   const Window window = Window::create({300, 300}, "Hello Orange");
   const GL::VertexArray va = GL::VertexArray::create();
 
@@ -50,9 +50,10 @@ int main() {
   orange.bind(0);
   textureProgram.setUniform("tex", 0);
 
-  const glm::vec4 clearColor = glm::vec4(0.2f, 0.5f, 0.8f, 1.0f);
+  const glm::vec3 clearColor = glm::vec3(0.2f, 0.5f, 0.8f);
+  GL::Renderer::setClearColor(clearColor);
   while (!window.shouldClose()) {
-    window.clear(clearColor);
+    GL::Renderer::clear();
 
     if (window.isKeyPressed(Key::Escape)) {
       window.triggerClose();

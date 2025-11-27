@@ -6,7 +6,7 @@
 #include <stdexcept>
 
 namespace STB {
-constexpr void setFlipVerticallyOnLoad(const bool flag) {
+inline void setFlipVerticallyOnLoad(const bool flag) {
   stbi_set_flip_vertically_on_load(flag);
 }
 
