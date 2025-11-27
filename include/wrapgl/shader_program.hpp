@@ -1,6 +1,7 @@
 #ifndef WRAPGL_SHADER_PROGRAM_HPP
 #define WRAPGL_SHADER_PROGRAM_HPP
 #include <filesystem>
+#include <glm/glm.hpp>
 #include <string_view>
 
 namespace GL {
@@ -31,8 +32,26 @@ public:
 
   void select() const;
   int getUniformLocation(const std::string_view &uniformName) const;
-  void setUniform(const int uniformLocation, const int value) const;
-  void setUniform(const std::string_view &uniformName, const int value) const;
+
+  // Uniform setting ones
+#define UNIFORM_DECL(type)                                                     \
+  void setUniform(const int uniformLocation, const type value) const;          \
+  void setUniform(const std::string_view &uniformName, const type value) const;
+
+  UNIFORM_DECL(float)
+  UNIFORM_DECL(glm::vec2)
+  UNIFORM_DECL(glm::vec3)
+  UNIFORM_DECL(glm::vec4)
+
+  UNIFORM_DECL(int)
+  UNIFORM_DECL(glm::ivec2)
+  UNIFORM_DECL(glm::ivec3)
+  UNIFORM_DECL(glm::ivec4)
+
+  UNIFORM_DECL(unsigned int)
+  UNIFORM_DECL(glm::uvec2)
+  UNIFORM_DECL(glm::uvec3)
+  UNIFORM_DECL(glm::uvec4)
 };
 } // namespace GL
 
