@@ -1,7 +1,7 @@
 #include "wrapgl/vertex_array.hpp"
 #include "glad/glad.h"
+#include "wrapgl/index_buffer.hpp"
 #include "wrapgl/vertex_buffer.hpp"
-#include <stdexcept>
 
 GL::VertexArray::VertexArray(const unsigned int rawId)
     : m_VertexArrayId(rawId) {}
@@ -16,17 +16,6 @@ GL::VertexArray::~VertexArray() { glDeleteVertexArrays(1, &m_VertexArrayId); }
 
 void GL::VertexArray::select() const { glBindVertexArray(m_VertexArrayId); }
 
-constexpr unsigned int glType(const GL::DataType type) {
-  switch (type) {
-  case GL::DataType::F32:
-    return GL_FLOAT;
-  }
-
-  throw std::runtime_error("Unknown Type");
-}
-
-constexpr unsigned int glBool(const bool b) { return b ? GL_TRUE : GL_FALSE; }
-
 void GL::VertexArray::setFormat(
     const std::vector<GL::Attribute> &attributes) const {
   unsigned int attribIndex = 0;
@@ -36,8 +25,9 @@ void GL::VertexArray::setFormat(
     glVertexArrayAttribBinding(m_VertexArrayId, attribIndex,
                                attribute.bindingIndex);
     glVertexArrayAttribFormat(
-        m_VertexArrayId, attribIndex, attribute.count, glType(attribute.type),
-        glBool(attribute.isNormalized), attribute.relativeOffset);
+        m_VertexArrayId, attribIndex, static_cast<int>(attribute.count),
+        glType(attribute.type), glBool(attribute.isNormalized),
+        attribute.relativeOffset);
     attribIndex++;
   }
 }
@@ -48,6 +38,10 @@ void GL::VertexArray::setBufferBindings(
     auto &binding = bindings.at(i);
     glVertexArrayVertexBuffer(m_VertexArrayId, binding.getBindingIndex(),
                               binding.getBufferId(), binding.getOffset(),
-                              binding.getStride());
+                              static_cast<int>(binding.getStride()));
   }
+}
+
+void GL::VertexArray::linkIndexBuffer(const GL::IndexBuffer &ib) const {
+  glVertexArrayElementBuffer(m_VertexArrayId, ib.m_IndexBufferId);
 }

@@ -1,5 +1,6 @@
 #include "wrapgl/renderer.hpp"
 #include "glad/glad.h"
+#include "wrapgl/data_types.hpp"
 
 constexpr unsigned int glMode(const GL::RenderMode mode) {
   switch (mode) {
@@ -7,16 +8,20 @@ constexpr unsigned int glMode(const GL::RenderMode mode) {
     return GL_TRIANGLES;
   case GL::RenderMode::TRIANGLE_STRIP:
     return GL_TRIANGLE_STRIP;
+  case GL::RenderMode::TRIANGLE_FAN:
+    return GL_TRIANGLE_FAN;
+  default:
+    throw std::runtime_error("Unknown Mode");
   }
-  throw std::runtime_error("Unknown Mode");
 }
 
 constexpr unsigned int glCapability(const GL::Capability mode) {
   switch (mode) {
   case GL::Capability::BLENDING:
     return GL_BLEND;
+  default:
+    throw std::runtime_error("Unknown Capability");
   }
-  throw std::runtime_error("Unknown Capability");
 }
 
 constexpr unsigned int glBlendFactor(const GL::BlendFactor f) {
@@ -51,8 +56,9 @@ constexpr unsigned int glBlendFactor(const GL::BlendFactor f) {
     return GL_ONE_MINUS_CONSTANT_ALPHA;
   case GL::BlendFactor::SOURCE_ALPHA_SATURATE:
     return GL_SRC_ALPHA_SATURATE;
+  default:
+    throw std::runtime_error("Unknown Blend Factor");
   }
-  throw std::runtime_error("Unknown Blend Factor");
 }
 
 constexpr unsigned int glBlendOperator(const GL::BlendOperator op) {
@@ -67,8 +73,9 @@ constexpr unsigned int glBlendOperator(const GL::BlendOperator op) {
     return GL_MIN;
   case GL::BlendOperator::MAX:
     return GL_MAX;
+  default:
+    throw std::runtime_error("Unknown Blend Operator");
   }
-  throw std::runtime_error("Unknown Blend Operator");
 }
 
 void GL::Renderer::setClearColor(const glm::vec4 color) {
@@ -101,9 +108,22 @@ void GL::Renderer::setBlendEquation(const BlendOperator op) {
 void GL::Renderer::drawArrays(const VertexArray &va,
                               const ShaderProgram &shader,
                               const RenderMode mode,
-                              const unsigned int firstVertex,
-                              const unsigned int verticesCount) {
+                              const unsigned int verticesCount,
+                              const unsigned int firstVertex) {
   va.select();
   shader.select();
-  glDrawArrays(glMode(mode), firstVertex, verticesCount);
+  glDrawArrays(glMode(mode), static_cast<int>(firstVertex),
+               static_cast<int>(verticesCount));
+}
+
+void GL::Renderer::drawElements(const VertexArray &va,
+                                const ShaderProgram &shader,
+                                const RenderMode mode,
+                                const unsigned int elementCount,
+                                const unsigned int offset,
+                                const GL::DataType indicesDataType) {
+  va.select();
+  shader.select();
+  glDrawElements(glMode(mode), elementCount, glType(indicesDataType),
+                 reinterpret_cast<void *>(offset));
 }

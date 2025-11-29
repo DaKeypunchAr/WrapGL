@@ -35,7 +35,7 @@ int main() {
       window.triggerClose();
     }
 
-    GL::Renderer::drawArrays(va, redShaderProgram, GL::RenderMode::TRIANGLES, 0,
+    GL::Renderer::drawArrays(va, redShaderProgram, GL::RenderMode::TRIANGLES,
                              3);
 
     window.swapBuffers();

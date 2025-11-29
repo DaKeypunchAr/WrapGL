@@ -9,6 +9,7 @@ namespace GL {
 enum class RenderMode {
   TRIANGLES,
   TRIANGLE_STRIP,
+  TRIANGLE_FAN,
 };
 
 enum class Capability { BLENDING };
@@ -50,8 +51,14 @@ struct Renderer {
 
   static void drawArrays(const VertexArray &va, const ShaderProgram &shader,
                          const RenderMode mode,
-                         const unsigned int firstVertexIndex,
-                         const unsigned int verticesCount);
+                         const unsigned int verticesCount,
+                         const unsigned int firstVertexIndex = 0);
+
+  static void drawElements(const VertexArray &va, const ShaderProgram &shader,
+                           const RenderMode mode,
+                           const unsigned int elementCount,
+                           const unsigned int offset = 0,
+                           const GL::DataType elementType = GL::DataType::U8);
 
 }; // namespace Renderer
 

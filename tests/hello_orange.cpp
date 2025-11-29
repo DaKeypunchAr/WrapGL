@@ -61,7 +61,7 @@ int main() {
 
     orange.bind(0);
     GL::Renderer::drawArrays(va, textureProgram, GL::RenderMode::TRIANGLE_STRIP,
-                             0, 4);
+                             4);
 
     window.swapBuffers();
     window.pollEvents();

@@ -12,10 +12,10 @@ public:
   inline ~GLFWWrapper() {
     if (m_Initialized)
       terminate();
-  };
+  }
   void init();
   void terminate();
-  inline bool isInitialized() const { return m_Initialized; };
+  inline bool isInitialized() const { return m_Initialized; }
 };
 
 struct GLFW {

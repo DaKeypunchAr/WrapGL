@@ -18,7 +18,7 @@ void GL::ShaderProgram::compileShader(const unsigned int shaderId) {
   if (!compilationStatus) {
     int logLength;
     glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &logLength);
-    std::vector<char> log(logLength);
+    std::vector<char> log(static_cast<size_t>(logLength));
     glGetShaderInfoLog(shaderId, logLength, nullptr, log.data());
     std::cout << "Failed to compile shader (id: " << shaderId
               << ")\nLog: " << log.data() << '\n';
@@ -35,7 +35,7 @@ void GL::ShaderProgram::linkProgram(const unsigned int programId) {
   if (!linkingStatus) {
     int logLength;
     glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &logLength);
-    std::vector<char> log(logLength);
+    std::vector<char> log(static_cast<size_t>(logLength));
     glGetProgramInfoLog(programId, logLength, nullptr, log.data());
     std::cout << "Failed to link program (id: " << programId
               << ")\nLog: " << log.data() << '\n';
@@ -59,7 +59,7 @@ GL::ShaderProgram::createFromSource(const std::string_view &vsSource,
     compileShader(vsId);
   } catch (const std::runtime_error &err) {
     std::string str = "Failed to compile vertex shader with id: ";
-    str += vsId;
+    str += std::to_string(vsId);
     throw std::runtime_error(str.data());
   }
 
@@ -67,7 +67,7 @@ GL::ShaderProgram::createFromSource(const std::string_view &vsSource,
     compileShader(fsId);
   } catch (const std::runtime_error &err) {
     std::string str = "Failed to compile fragment shader with id: ";
-    str += fsId;
+    str += std::to_string(fsId);
     throw std::runtime_error(str.data());
   }
 
@@ -78,7 +78,7 @@ GL::ShaderProgram::createFromSource(const std::string_view &vsSource,
     linkProgram(programId);
   } catch (const std::runtime_error &err) {
     std::string str = "Failed to link program with id: ";
-    str += programId;
+    str += std::to_string(programId);
     throw std::runtime_error(str.data());
   }
 

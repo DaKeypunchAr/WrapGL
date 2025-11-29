@@ -1,8 +1,8 @@
 project(
   'wrapgl',
-  'cpp',
+  ['cpp', 'c'],
   default_options: [
-    'cpp_std=c++17',
+    'cpp_std=c++20',
   ],
 )
 

@@ -151,7 +151,7 @@ public:
 public:
   Window() = delete;
   Window(const Window &other) = delete;
-  Window(const Window &&other) = delete;
+  Window &operator=(const Window &) = delete;
   ~Window();
 
   bool shouldClose() const;

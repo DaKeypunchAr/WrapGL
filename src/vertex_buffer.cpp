@@ -1,6 +1,6 @@
 #include "wrapgl/vertex_buffer.hpp"
 #include "glad/glad.h"
-#include <stdexcept>
+#include <iostream>
 
 GL::VertexBuffer::VertexBuffer(const unsigned int rawId)
     : m_VertexBufferId(rawId) {}
@@ -11,54 +11,20 @@ GL::VertexBuffer GL::VertexBuffer::create() {
   return GL::VertexBuffer(rawId);
 }
 
-constexpr unsigned int glHintFromEnums(const GL::BufferFrequencyHint f,
-                                       const GL::BufferAccessNatureHint a) {
-  switch (f) {
-  case GL::BufferFrequencyHint::STREAM:
-    switch (a) {
-    case GL::BufferAccessNatureHint::DRAW:
-      return GL_STREAM_DRAW;
-    case GL::BufferAccessNatureHint::COPY:
-      return GL_STREAM_COPY;
-    case GL::BufferAccessNatureHint::READ:
-      return GL_STREAM_READ;
-    }
-  case GL::BufferFrequencyHint::STATIC:
-    switch (a) {
-    case GL::BufferAccessNatureHint::DRAW:
-      return GL_STATIC_DRAW;
-    case GL::BufferAccessNatureHint::COPY:
-      return GL_STATIC_COPY;
-    case GL::BufferAccessNatureHint::READ:
-      return GL_STATIC_READ;
-    }
-  case GL::BufferFrequencyHint::DYNAMIC:
-    switch (a) {
-    case GL::BufferAccessNatureHint::DRAW:
-      return GL_DYNAMIC_DRAW;
-    case GL::BufferAccessNatureHint::COPY:
-      return GL_DYNAMIC_COPY;
-    case GL::BufferAccessNatureHint::READ:
-      return GL_DYNAMIC_READ;
-    }
-  }
-  throw std::runtime_error("Unknown Hint");
-}
-
 GL::VertexBuffer
 GL::VertexBuffer::createAndAllocate(const std::vector<float> &data,
-                                    const GL::BufferFrequencyHint freq,
-                                    const GL::BufferAccessNatureHint acc) {
+                                    const GL::BufferUpdateFrequency freq,
+                                    const GL::BufferAccessPattern acc) {
   unsigned int rawId;
   glCreateBuffers(1, &rawId);
-  glNamedBufferData(rawId, sizeof(float) * data.size(), data.data(),
-                    glHintFromEnums(freq, acc));
+  glNamedBufferData(rawId, static_cast<long>(sizeof(float) * data.size()),
+                    data.data(), glHintFromEnums(freq, acc));
   return GL::VertexBuffer(rawId);
 }
 GL::VertexBuffer
 GL::VertexBuffer::createAndAllocate(const unsigned int bufferSizeInBytes,
-                                    const GL::BufferFrequencyHint freq,
-                                    const GL::BufferAccessNatureHint acc) {
+                                    const GL::BufferUpdateFrequency freq,
+                                    const GL::BufferAccessPattern acc) {
   unsigned int rawId;
   glCreateBuffers(1, &rawId);
   glNamedBufferData(rawId, bufferSizeInBytes, nullptr,
@@ -70,22 +36,41 @@ GL::VertexBuffer::~VertexBuffer() { glDeleteBuffers(1, &m_VertexBufferId); }
 
 void GL::VertexBuffer::update(const std::vector<float> &data,
                               const unsigned int offsetInBytes) const {
+  if ((offsetInBytes + data.size() * sizeof(float)) > getBufferSizeInBytes()) {
+    std::cerr << "You should not update the buffer past it's boundary. "
+                 "Reallocated buffer for your ease. But fix it.\n";
+    int usage_hint;
+    glGetNamedBufferParameteriv(m_VertexBufferId, GL_BUFFER_USAGE, &usage_hint);
+    glNamedBufferData(m_VertexBufferId,
+                      static_cast<long>(sizeof(float) * data.size()),
+                      data.data(), usage_hint);
+    return;
+  }
+
   glNamedBufferSubData(m_VertexBufferId, offsetInBytes,
-                       sizeof(float) * data.size(), data.data());
+                       static_cast<long>(sizeof(float) * data.size()),
+                       data.data());
 }
 
-void GL::VertexBuffer::allocateBuffer(
-    const std::vector<float> &data, const GL::BufferFrequencyHint freq,
-    const GL::BufferAccessNatureHint acc) const {
-  glNamedBufferData(m_VertexBufferId, sizeof(float) * data.size(), data.data(),
+void GL::VertexBuffer::allocateBuffer(const std::vector<float> &data,
+                                      const GL::BufferUpdateFrequency freq,
+                                      const GL::BufferAccessPattern acc) const {
+  glNamedBufferData(m_VertexBufferId,
+                    static_cast<long>(sizeof(float) * data.size()), data.data(),
                     glHintFromEnums(freq, acc));
 }
 
-void GL::VertexBuffer::allocateBuffer(
-    const unsigned int bufferSizeInBytes, const GL::BufferFrequencyHint freq,
-    const GL::BufferAccessNatureHint acc) const {
+void GL::VertexBuffer::allocateBuffer(const unsigned int bufferSizeInBytes,
+                                      const GL::BufferUpdateFrequency freq,
+                                      const GL::BufferAccessPattern acc) const {
   glNamedBufferData(m_VertexBufferId, bufferSizeInBytes, nullptr,
                     glHintFromEnums(freq, acc));
+}
+
+unsigned int GL::VertexBuffer::getBufferSizeInBytes() const {
+  int size;
+  glGetNamedBufferParameteriv(m_VertexBufferId, GL_BUFFER_SIZE, &size);
+  return static_cast<unsigned int>(size);
 }
 
 GL::Binding::Binding(const unsigned int vbIdx, const unsigned int bindingIdx,

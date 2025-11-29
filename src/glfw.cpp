@@ -3,6 +3,8 @@
 #include <iostream>
 #include <stdexcept>
 
+void glfwErrorCallback(int errorCode, const char *description);
+
 void glfwErrorCallback(int errorCode, const char *description) {
   std::cout << "GLFW Error (" << errorCode << "): " << description << '\n';
 }

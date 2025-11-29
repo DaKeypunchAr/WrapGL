@@ -1,14 +1,9 @@
 #ifndef WRAPGL_VERTEX_BUFFER_HPP
 #define WRAPGL_VERTEX_BUFFER_HPP
+#include "buffer_commons.hpp"
 #include <vector>
 
 namespace GL {
-
-// TODO: Come with better names
-enum class BufferFrequencyHint { STREAM, STATIC, DYNAMIC };
-
-// TODO: Come with better names
-enum class BufferAccessNatureHint { DRAW, READ, COPY };
 
 class Binding;
 
@@ -23,12 +18,12 @@ public:
   static VertexBuffer create();
   static VertexBuffer createAndAllocate(
       const std::vector<float> &data,
-      const GL::BufferFrequencyHint freq = GL::BufferFrequencyHint::STATIC,
-      const GL::BufferAccessNatureHint acc = GL::BufferAccessNatureHint::DRAW);
+      const GL::BufferUpdateFrequency freq = GL::BufferUpdateFrequency::STATIC,
+      const GL::BufferAccessPattern acc = GL::BufferAccessPattern::DRAW);
   static VertexBuffer createAndAllocate(
       const unsigned int bufferSizeInBytes,
-      const GL::BufferFrequencyHint freq = GL::BufferFrequencyHint::STATIC,
-      const GL::BufferAccessNatureHint acc = GL::BufferAccessNatureHint::DRAW);
+      const GL::BufferUpdateFrequency freq = GL::BufferUpdateFrequency::STATIC,
+      const GL::BufferAccessPattern acc = GL::BufferAccessPattern::DRAW);
 
 public:
   VertexBuffer() = delete;
@@ -39,15 +34,15 @@ public:
 
   void allocateBuffer(
       const std::vector<float> &data,
-      const GL::BufferFrequencyHint freq = GL::BufferFrequencyHint::STATIC,
-      const GL::BufferAccessNatureHint acc =
-          GL::BufferAccessNatureHint::DRAW) const;
+      const GL::BufferUpdateFrequency freq = GL::BufferUpdateFrequency::STATIC,
+      const GL::BufferAccessPattern acc = GL::BufferAccessPattern::DRAW) const;
 
   void allocateBuffer(
       const unsigned int bufferSizeInBytes,
-      const GL::BufferFrequencyHint freq = GL::BufferFrequencyHint::STATIC,
-      const GL::BufferAccessNatureHint acc =
-          GL::BufferAccessNatureHint::DRAW) const;
+      const GL::BufferUpdateFrequency freq = GL::BufferUpdateFrequency::STATIC,
+      const GL::BufferAccessPattern acc = GL::BufferAccessPattern::DRAW) const;
+
+  unsigned int getBufferSizeInBytes() const;
 
   friend Binding;
 };

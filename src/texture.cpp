@@ -1,7 +1,6 @@
-#include <stdexcept>
-#define STB_IMAGE_IMPLEMENTATION
-#include "glad/glad.h"
 #include "wrapgl/texture.hpp"
+#include "glad/glad.h"
+#include <stdexcept>
 
 GL::Texture2D::Texture2D(unsigned int textureId) : m_TextureId(textureId) {}
 
@@ -24,8 +23,9 @@ GL::Texture2D GL::Texture2D::create(const glm::uvec2 dimensions,
   glCreateTextures(GL_TEXTURE_2D, 1, &textureId);
   if (format != GL::TextureFormat::RGBA8)
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-  glTextureStorage2D(textureId, levels, glInternalFormat(format), dimensions.x,
-                     dimensions.y);
+  glTextureStorage2D(textureId, static_cast<int>(levels),
+                     glInternalFormat(format), static_cast<int>(dimensions.x),
+                     static_cast<int>(dimensions.y));
 
   return GL::Texture2D(textureId);
 }
@@ -54,15 +54,17 @@ GL::Texture2D GL::Texture2D::loadFromFile(const std::filesystem::path &path,
   unsigned int textureId;
   glCreateTextures(GL_TEXTURE_2D, 1, &textureId);
   glTextureStorage2D(
-      textureId, levels,
+      textureId, static_cast<int>(levels),
       glInternalFormatWithNumberOf8bitChannels(data.getForcedChannels()),
-      data.getDimension().x, data.getDimension().y);
+      static_cast<int>(data.getDimension().x),
+      static_cast<int>(data.getDimension().y));
 
   if (data.getForcedChannels() != 4)
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
   glTextureSubImage2D(
-      textureId, 0, 0, 0, data.getDimension().x, data.getDimension().y,
+      textureId, 0, 0, 0, static_cast<int>(data.getDimension().x),
+      static_cast<int>(data.getDimension().y),
       glExternalFormatWithNumberOf8bitChannels(data.getForcedChannels()),
       GL_UNSIGNED_BYTE, data.getDataPtr());
 
@@ -75,7 +77,7 @@ constexpr unsigned int glDir(const GL::WrapDirection dir) {
          (dir == GL::WrapDirection::R) * GL_TEXTURE_WRAP_R;
 }
 
-constexpr unsigned int glMode(const GL::WrapMode mode) {
+constexpr int glMode(const GL::WrapMode mode) {
   return (mode == GL::WrapMode::REPEAT) * GL_REPEAT +
          (mode == GL::WrapMode::MIRRORED_REPEAT) * GL_MIRRORED_REPEAT +
          (mode == GL::WrapMode::CLAMP_TO_EDGE) * GL_CLAMP_TO_EDGE +
@@ -89,7 +91,7 @@ void GL::Texture2D::updateWrap(const GL::WrapDirection dir,
   glTextureParameteri(m_TextureId, glDir(dir), glMode(mode));
 }
 
-constexpr unsigned int glFilterMode(const GL::MinFilterMode mode) {
+constexpr int glFilterMode(const GL::MinFilterMode mode) {
   return (mode == GL::MinFilterMode::LINEAR) * GL_LINEAR +
          (mode == GL::MinFilterMode::LINEAR_MIPMAP_LINEAR) *
              GL_LINEAR_MIPMAP_LINEAR +
@@ -102,7 +104,7 @@ constexpr unsigned int glFilterMode(const GL::MinFilterMode mode) {
              GL_NEAREST_MIPMAP_LINEAR;
 }
 
-constexpr unsigned int glFilterMode(const GL::MagFilterMode mode) {
+constexpr int glFilterMode(const GL::MagFilterMode mode) {
   return (mode == GL::MagFilterMode::LINEAR) * GL_LINEAR +
          (mode == GL::MagFilterMode::NEAREST) * GL_NEAREST;
 }
@@ -138,8 +140,10 @@ void GL::Texture2D::update(const void *const textureData,
                            const GL::TextureFormat format,
                            const glm::uvec2 offset, const glm::uvec2 dimension,
                            const unsigned int level) const {
-  glTextureSubImage2D(m_TextureId, level, offset.x, offset.y, dimension.x,
-                      dimension.y, glExternalFormat(format),
+  glTextureSubImage2D(m_TextureId, static_cast<int>(level),
+                      static_cast<int>(offset.x), static_cast<int>(offset.y),
+                      static_cast<int>(dimension.x),
+                      static_cast<int>(dimension.y), glExternalFormat(format),
                       glFormatType(format), textureData);
 }
 

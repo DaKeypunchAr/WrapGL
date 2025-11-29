@@ -6,6 +6,12 @@
 #include <iostream>
 #include <stdexcept>
 
+int glfwKey(const Key k);
+void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void opengl_error_callback(GLenum source, GLenum type, GLuint id,
+                           GLenum severity, GLsizei length,
+                           GLchar const *message, void const *user_param);
+
 int glfwKey(const Key k) {
   switch (k) {
   case Key::Unknown:
@@ -254,12 +260,13 @@ int glfwKey(const Key k) {
     return GLFW_KEY_RIGHT_SUPER;
   case Key::Menu:
     return GLFW_KEY_MENU;
+  default:
+    return GLFW_KEY_UNKNOWN;
   }
-  return GLFW_KEY_UNKNOWN;
 }
 
 void opengl_error_callback(GLenum source, GLenum type, GLuint id,
-                           GLenum severity, GLsizei length,
+                           GLenum severity, GLsizei length [[maybe_unused]],
                            GLchar const *message, void const *user_param) {
   const char *const src_str = [source]() {
     switch (source) {
@@ -321,10 +328,12 @@ void opengl_error_callback(GLenum source, GLenum type, GLuint id,
     throw std::runtime_error("User Parameter that is the Window ptr is null!");
   else
     std::cout << "From window with title: "
-              << ((Window *)user_param)->getTitle() << '\n';
+              << (reinterpret_cast<const Window *>(user_param))->getTitle()
+              << '\n';
 }
 
-void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+void framebuffer_size_callback(GLFWwindow *window [[maybe_unused]], int width,
+                               int height) {
   glViewport(0, 0, width, height);
 }
 
@@ -343,8 +352,9 @@ Window Window::create(const glm::uvec2 dimensions,
 
 // Non-static methods
 Window::Window(const glm::uvec2 dimensions, const std::string_view &title)
-    : m_WindowHandle(glfwCreateWindow(dimensions.x, dimensions.y, title.data(),
-                                      nullptr, nullptr)),
+    : m_WindowHandle(glfwCreateWindow(static_cast<int>(dimensions.x),
+                                      static_cast<int>(dimensions.y),
+                                      title.data(), nullptr, nullptr)),
       m_Title(title), m_InitialDimension(dimensions) {
   if (!m_WindowHandle) {
     GLFW::terminate();
@@ -352,7 +362,7 @@ Window::Window(const glm::uvec2 dimensions, const std::string_view &title)
   }
   glfwSetFramebufferSizeCallback(m_WindowHandle, framebuffer_size_callback);
   glfwMakeContextCurrent(m_WindowHandle);
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+  if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
     throw std::runtime_error("Unable to initialize GLAD!");
   }
 

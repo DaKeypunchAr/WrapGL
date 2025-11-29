@@ -1,7 +1,9 @@
 #ifndef WRAPGL_TEXTURE_HPP
 #define WRAPGL_TEXTURE_HPP
 #include "glm/glm.hpp" // IWYU pragma: keep
-#include "stbi_image.hpp"
+extern "C" {
+#include "stbi_image.h"
+}
 #include <filesystem>
 #include <stdexcept>
 
@@ -31,8 +33,8 @@ public:
                         const unsigned int requiredChannels = 0) {
     glm::ivec2 dim;
     int noc;
-    unsigned char *imageData =
-        stbi_load(path.c_str(), &dim.x, &dim.y, &noc, requiredChannels);
+    unsigned char *imageData = stbi_load(path.c_str(), &dim.x, &dim.y, &noc,
+                                         static_cast<int>(requiredChannels));
 
     if (!imageData) {
       std::string errMsg = "Failed to load image using stb at path: ";
@@ -40,12 +42,19 @@ public:
       throw std::runtime_error(errMsg);
     }
 
-    return ImageData(imageData, dim, noc,
-                     requiredChannels + (requiredChannels == 0) * noc);
+    return ImageData(imageData, dim, static_cast<unsigned int>(noc),
+                     requiredChannels + static_cast<unsigned int>(
+                                            (requiredChannels == 0) * noc));
   }
+
+public:
+  ImageData() = delete;
+  ImageData(const ImageData &other) = delete;
+  ImageData &operator=(const ImageData &) = delete;
+
   ~ImageData() { stbi_image_free(m_Data); }
 
-  const unsigned char *const getDataPtr() const { return m_Data; }
+  const unsigned char *getDataPtr() const { return m_Data; }
   constexpr glm::uvec2 getDimension() const { return m_Dimension; }
   constexpr unsigned int getNumberOfChannels() const {
     return m_NumOfColorChannels;

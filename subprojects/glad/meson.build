@@ -1,4 +1,4 @@
-project('glad', 'c')
+project('glad', 'c', default_options: ['cpp_std=20'])
 
 glad_lib = library(
   'glad',

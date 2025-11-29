@@ -1,11 +1,10 @@
 #ifndef WRAPGL_VERTEX_ARRAY_HPP
 #define WRAPGL_VERTEX_ARRAY_HPP
+#include "data_types.hpp"
+#include "index_buffer.hpp"
 #include "vertex_buffer.hpp"
 
 namespace GL {
-enum class DataType {
-  F32,
-};
 
 struct Attribute {
   unsigned int count = 0;
@@ -42,6 +41,7 @@ public:
 
   void setFormat(const std::vector<Attribute> &attributes) const;
   void setBufferBindings(const std::vector<Binding> &bindings) const;
+  void linkIndexBuffer(const IndexBuffer &buffer) const;
   void select() const;
 };
 } // namespace GL
