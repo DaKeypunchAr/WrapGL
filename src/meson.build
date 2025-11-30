@@ -4,6 +4,7 @@ sources = [
   'glfw.cpp',
   'vertex_array.cpp',
   'vertex_buffer.cpp',
+  'index_buffer.cpp',
   'shader_program.cpp',
   'renderer.cpp',
 ]
