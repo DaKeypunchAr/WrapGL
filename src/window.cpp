@@ -1,6 +1,7 @@
+#include <functional>
 #define GLFW_INCLUDE_NONE
-#include "wrapgl/window.hpp"
 #include "wrapgl/glfw.hpp"
+#include "wrapgl/window.hpp"
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 #include <iostream>
@@ -340,8 +341,9 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 std::forward_list<Window::WindowInst> Window::s_Instances;
 
 // Static methods
-Window Window::create(const glm::uvec2 dimensions,
-                      const std::string_view &title) {
+Window
+Window::create(const glm::uvec2 dimensions, const std::string_view &title,
+               const std::function<void(glm::uvec2)> &frameBufferSizeCallback) {
   if (!GLFW::isInitialized()) {
     GLFW::initialize();
   }
@@ -349,15 +351,17 @@ Window Window::create(const glm::uvec2 dimensions,
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-  return Window(dimensions, title);
+  return Window(dimensions, title, frameBufferSizeCallback);
 }
 
 // Non-static methods
-Window::Window(const glm::uvec2 dimensions, const std::string_view &title)
+Window::Window(const glm::uvec2 dimensions, const std::string_view &title,
+               const std::function<void(glm::uvec2)> &fsClbk)
     : m_WindowHandle(glfwCreateWindow(static_cast<int>(dimensions.x),
                                       static_cast<int>(dimensions.y),
                                       title.data(), nullptr, nullptr)),
-      m_Title(title), m_InitialDimension(dimensions) {
+      m_Title(title), m_InitialDimension(dimensions),
+      m_FrameBufferSizeCallback(fsClbk) {
   if (!m_WindowHandle) {
     GLFW::terminate();
     throw std::runtime_error("GLFW failed to create a window!");

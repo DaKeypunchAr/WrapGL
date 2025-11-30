@@ -138,11 +138,13 @@ enum class Key {
 
 class Window {
 private:
-  Window(const glm::uvec2 dimensions, const std::string_view &title);
+  Window(const glm::uvec2 dimensions, const std::string_view &title,
+         const std::function<void(glm::uvec2)> &framebuffer_size_callback = {});
 
 public:
-  static Window create(const glm::uvec2 dimensions,
-                       const std::string_view &title);
+  static Window
+  create(const glm::uvec2 dimensions, const std::string_view &title,
+         const std::function<void(glm::uvec2)> &framebufferSizeCallback = {});
   static void pollEvents();
 
 public:
@@ -184,7 +186,7 @@ private:
   GLFWwindow *m_WindowHandle;
   std::string m_Title;
   glm::uvec2 m_InitialDimension;
-  std::function<void(glm::uvec2)> m_FrameBufferSizeCallback;
+  mutable std::function<void(glm::uvec2)> m_FrameBufferSizeCallback;
 
 private:
   struct WindowInst {
