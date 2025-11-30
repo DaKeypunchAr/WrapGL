@@ -190,8 +190,10 @@ private:
 
 private:
   struct WindowInst {
-    GLFWwindow *glfwPtr;
-    Window *wrapglPtr;
+    const GLFWwindow *glfwPtr;
+    const Window *wrapglPtr;
+    WindowInst(const GLFWwindow *const glfwPtr, const Window *const wrapglPtr)
+        : glfwPtr(glfwPtr), wrapglPtr(wrapglPtr) {}
   };
   static std::forward_list<WindowInst> s_Instances;
 };
