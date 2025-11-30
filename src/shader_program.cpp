@@ -1,5 +1,6 @@
 #include "wrapgl/shader_program.hpp"
 #include "glad/glad.h"
+#include "glm/gtc/type_ptr.hpp"
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -200,6 +201,122 @@ void GL::ShaderProgram::setUniform(const int uniformLocation,
   glUniform4ui(uniformLocation, value.x, value.y, value.z, value.w);
 }
 
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const glm::mat2 m) const {
+  select();
+  glUniformMatrix2fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(m));
+}
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const glm::mat2x3 m) const {
+  select();
+  glUniformMatrix2x3fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(m));
+}
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const glm::mat2x4 m) const {
+  select();
+  glUniformMatrix2x4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(m));
+}
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const glm::mat3 m) const {
+  select();
+  glUniformMatrix3fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(m));
+}
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const glm::mat3x2 m) const {
+  select();
+  glUniformMatrix3x2fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(m));
+}
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const glm::mat3x4 m) const {
+  select();
+  glUniformMatrix3x4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(m));
+}
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const glm::mat4 m) const {
+  select();
+  glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(m));
+}
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const glm::mat4x2 m) const {
+  select();
+  glUniformMatrix4x2fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(m));
+}
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const glm::mat4x3 m) const {
+  select();
+  glUniformMatrix4x3fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(m));
+}
+
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const std::vector<glm::mat2> m) const {
+  if (m.size() == 0)
+    throw std::runtime_error("Number of matrices must be non-zero!");
+  select();
+  glUniformMatrix2fv(uniformLocation, m.size(), GL_FALSE, glm::value_ptr(m[0]));
+}
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const std::vector<glm::mat2x3> m) const {
+  if (m.size() == 0)
+    throw std::runtime_error("Number of matrices must be non-zero!");
+  select();
+  glUniformMatrix2x3fv(uniformLocation, m.size(), GL_FALSE,
+                       glm::value_ptr(m[0]));
+}
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const std::vector<glm::mat2x4> m) const {
+  if (m.size() == 0)
+    throw std::runtime_error("Number of matrices must be non-zero!");
+  select();
+  glUniformMatrix2x4fv(uniformLocation, m.size(), GL_FALSE,
+                       glm::value_ptr(m[0]));
+}
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const std::vector<glm::mat3> m) const {
+  if (m.size() == 0)
+    throw std::runtime_error("Number of matrices must be non-zero!");
+  select();
+  glUniformMatrix3fv(uniformLocation, m.size(), GL_FALSE, glm::value_ptr(m[0]));
+}
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const std::vector<glm::mat3x2> m) const {
+  if (m.size() == 0)
+    throw std::runtime_error("Number of matrices must be non-zero!");
+  select();
+  glUniformMatrix3x2fv(uniformLocation, m.size(), GL_FALSE,
+                       glm::value_ptr(m[0]));
+}
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const std::vector<glm::mat3x4> m) const {
+  if (m.size() == 0)
+    throw std::runtime_error("Number of matrices must be non-zero!");
+  select();
+  glUniformMatrix3x4fv(uniformLocation, m.size(), GL_FALSE,
+                       glm::value_ptr(m[0]));
+}
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const std::vector<glm::mat4> m) const {
+  if (m.size() == 0)
+    throw std::runtime_error("Number of matrices must be non-zero!");
+  select();
+  glUniformMatrix4fv(uniformLocation, m.size(), GL_FALSE, glm::value_ptr(m[0]));
+}
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const std::vector<glm::mat4x2> m) const {
+  if (m.size() == 0)
+    throw std::runtime_error("Number of matrices must be non-zero!");
+  select();
+  glUniformMatrix4x2fv(uniformLocation, m.size(), GL_FALSE,
+                       glm::value_ptr(m[0]));
+}
+void GL::ShaderProgram::setUniform(const int uniformLocation,
+                                   const std::vector<glm::mat4x3> m) const {
+  if (m.size() == 0)
+    throw std::runtime_error("Number of matrices must be non-zero!");
+  select();
+  glUniformMatrix4x3fv(uniformLocation, m.size(), GL_FALSE,
+                       glm::value_ptr(m[0]));
+}
+
 #define UNIFORM_ABST_DEF(type)                                                 \
   void GL::ShaderProgram::setUniform(const std::string_view &uniformName,      \
                                      const type value) const {                 \
@@ -220,3 +337,27 @@ UNIFORM_ABST_DEF(unsigned int)
 UNIFORM_ABST_DEF(glm::uvec2)
 UNIFORM_ABST_DEF(glm::uvec3)
 UNIFORM_ABST_DEF(glm::uvec4)
+
+UNIFORM_ABST_DEF(glm::mat2)
+UNIFORM_ABST_DEF(glm::mat2x3)
+UNIFORM_ABST_DEF(glm::mat2x4)
+
+UNIFORM_ABST_DEF(glm::mat3)
+UNIFORM_ABST_DEF(glm::mat3x2)
+UNIFORM_ABST_DEF(glm::mat3x4)
+
+UNIFORM_ABST_DEF(glm::mat4)
+UNIFORM_ABST_DEF(glm::mat4x2)
+UNIFORM_ABST_DEF(glm::mat4x3)
+
+UNIFORM_ABST_DEF(std::vector<glm::mat2>)
+UNIFORM_ABST_DEF(std::vector<glm::mat2x3>)
+UNIFORM_ABST_DEF(std::vector<glm::mat2x4>)
+
+UNIFORM_ABST_DEF(std::vector<glm::mat3>)
+UNIFORM_ABST_DEF(std::vector<glm::mat3x2>)
+UNIFORM_ABST_DEF(std::vector<glm::mat3x4>)
+
+UNIFORM_ABST_DEF(std::vector<glm::mat4>)
+UNIFORM_ABST_DEF(std::vector<glm::mat4x2>)
+UNIFORM_ABST_DEF(std::vector<glm::mat4x3>)

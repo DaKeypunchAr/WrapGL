@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <glm/glm.hpp>
 #include <string_view>
+#include <vector>
 
 namespace GL {
 class ShaderProgram {
@@ -36,22 +37,46 @@ public:
   // Uniform setting ones
 #define UNIFORM_DECL(type)                                                     \
   void setUniform(const int uniformLocation, const type value) const;          \
-  void setUniform(const std::string_view &uniformName, const type value) const;
+  void setUniform(const std::string_view &uniformName, const type value) const
 
-  UNIFORM_DECL(float)
-  UNIFORM_DECL(glm::vec2)
-  UNIFORM_DECL(glm::vec3)
-  UNIFORM_DECL(glm::vec4)
+  UNIFORM_DECL(float);
+  UNIFORM_DECL(glm::vec2);
+  UNIFORM_DECL(glm::vec3);
+  UNIFORM_DECL(glm::vec4);
 
-  UNIFORM_DECL(int)
-  UNIFORM_DECL(glm::ivec2)
-  UNIFORM_DECL(glm::ivec3)
-  UNIFORM_DECL(glm::ivec4)
+  UNIFORM_DECL(int);
+  UNIFORM_DECL(glm::ivec2);
+  UNIFORM_DECL(glm::ivec3);
+  UNIFORM_DECL(glm::ivec4);
 
-  UNIFORM_DECL(unsigned int)
-  UNIFORM_DECL(glm::uvec2)
-  UNIFORM_DECL(glm::uvec3)
-  UNIFORM_DECL(glm::uvec4)
+  UNIFORM_DECL(unsigned int);
+  UNIFORM_DECL(glm::uvec2);
+  UNIFORM_DECL(glm::uvec3);
+  UNIFORM_DECL(glm::uvec4);
+
+  UNIFORM_DECL(glm::mat2);
+  UNIFORM_DECL(glm::mat2x3);
+  UNIFORM_DECL(glm::mat2x4);
+
+  UNIFORM_DECL(glm::mat3);
+  UNIFORM_DECL(glm::mat3x2);
+  UNIFORM_DECL(glm::mat3x4);
+
+  UNIFORM_DECL(glm::mat4);
+  UNIFORM_DECL(glm::mat4x2);
+  UNIFORM_DECL(glm::mat4x3);
+
+  UNIFORM_DECL(std::vector<glm::mat2>);
+  UNIFORM_DECL(std::vector<glm::mat2x3>);
+  UNIFORM_DECL(std::vector<glm::mat2x4>);
+
+  UNIFORM_DECL(std::vector<glm::mat3>);
+  UNIFORM_DECL(std::vector<glm::mat3x2>);
+  UNIFORM_DECL(std::vector<glm::mat3x4>);
+
+  UNIFORM_DECL(std::vector<glm::mat4>);
+  UNIFORM_DECL(std::vector<glm::mat4x2>);
+  UNIFORM_DECL(std::vector<glm::mat4x3>);
 };
 } // namespace GL
 
