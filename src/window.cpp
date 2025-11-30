@@ -332,10 +332,12 @@ void opengl_error_callback(GLenum source, GLenum type, GLuint id,
               << '\n';
 }
 
-void framebuffer_size_callback(GLFWwindow *window [[maybe_unused]], int width,
-                               int height) {
+void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   glViewport(0, 0, width, height);
+  Window::callFramebufferSizeCallback(window, glm::uvec2(width, height));
 }
+
+std::forward_list<Window::WindowInst> Window::s_Instances;
 
 // Static methods
 Window Window::create(const glm::uvec2 dimensions,
@@ -368,14 +370,37 @@ Window::Window(const glm::uvec2 dimensions, const std::string_view &title)
 
   glEnable(GL_DEBUG_OUTPUT);
   glDebugMessageCallback(opengl_error_callback, this);
+
+  s_Instances.emplace_front(m_WindowHandle, this);
 }
 
 Window::~Window() {
+  auto prev = s_Instances.before_begin();
+  for (auto cur = s_Instances.begin(); cur != s_Instances.end(); cur++) {
+    if (cur->glfwPtr == m_WindowHandle) {
+      s_Instances.erase_after(prev);
+      break;
+    }
+    prev = cur;
+  }
   if (GLFW::isInitialized() && m_WindowHandle) {
     // Don't know if necessary, but prevents any UB, ig...
     glDebugMessageCallback(opengl_error_callback, nullptr);
     glfwDestroyWindow(m_WindowHandle);
     m_WindowHandle = nullptr;
+  }
+}
+void Window::callFramebufferSizeCallback(const GLFWwindow *const ptr,
+                                         const glm::uvec2 dimension) {
+  auto prev = s_Instances.before_begin();
+  for (auto cur = s_Instances.begin(); cur != s_Instances.end(); cur++) {
+    if (cur->glfwPtr == ptr) {
+      if (cur->wrapglPtr->m_FrameBufferSizeCallback) {
+        cur->wrapglPtr->m_FrameBufferSizeCallback(dimension);
+      }
+      break;
+    }
+    prev = cur;
   }
 }
 

@@ -1,5 +1,7 @@
 #ifndef WRAPGL_WINDOW_HPP
 #define WRAPGL_WINDOW_HPP
+#include <forward_list>
+#include <functional>
 #include <glm/glm.hpp>
 #include <string>
 #include <string_view>
@@ -136,11 +138,6 @@ enum class Key {
 
 class Window {
 private:
-  GLFWwindow *m_WindowHandle;
-  std::string m_Title;
-  glm::uvec2 m_InitialDimension;
-
-private:
   Window(const glm::uvec2 dimensions, const std::string_view &title);
 
 public:
@@ -171,6 +168,30 @@ public:
   inline glm::uvec2 getInitialDimension() const { return m_InitialDimension; }
 
   inline GLFWwindow *getRawPointer() const { return m_WindowHandle; }
+
+  inline void
+  setFrameBufferSizeCallback(const std::function<void(glm::uvec2)> &f) {
+    m_FrameBufferSizeCallback = f;
+  }
+
+  friend void framebuffer_size_callback(GLFWwindow *, int, int);
+
+private:
+  static void callFramebufferSizeCallback(const GLFWwindow *const ptr,
+                                          const glm::uvec2 dimension);
+
+private:
+  GLFWwindow *m_WindowHandle;
+  std::string m_Title;
+  glm::uvec2 m_InitialDimension;
+  std::function<void(glm::uvec2)> m_FrameBufferSizeCallback;
+
+private:
+  struct WindowInst {
+    GLFWwindow *glfwPtr;
+    Window *wrapglPtr;
+  };
+  static std::forward_list<WindowInst> s_Instances;
 };
 
 #endif
