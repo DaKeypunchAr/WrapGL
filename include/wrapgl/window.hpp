@@ -172,7 +172,7 @@ public:
   inline GLFWwindow *getRawPointer() const { return m_WindowHandle; }
 
   inline void
-  setFrameBufferSizeCallback(const std::function<void(glm::uvec2)> &f) {
+  setFrameBufferSizeCallback(const std::function<void(glm::uvec2)> &f) const {
     m_FrameBufferSizeCallback = f;
   }
 
