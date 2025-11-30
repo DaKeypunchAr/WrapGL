@@ -92,6 +92,37 @@ GL::ShaderProgram::createFromSource(const std::string_view &vsSource,
   return GL::ShaderProgram(programId);
 }
 
+GL::ShaderProgram GL::ShaderProgram::createTextureShader() {
+  auto vs = R"(
+#version 330 core
+
+layout (location = 0) in vec2 aPos;
+layout (location = 1) in vec2 aTexCoords;
+
+uniform mat4 uProjection;
+
+out vec2 texCoords;
+
+void main() {
+  gl_Position = uProjection * vec4(aPos, 0.0, 1.0);
+  texCoords = aTexCoords;
+}
+  )";
+  auto fs = R"(
+#version 330 core
+
+in vec2 texCoords;
+
+uniform sampler2D uTexture;
+out vec4 color;
+
+void main() {
+    color = texture(uTexture, texCoords);
+}
+  )";
+  return GL::ShaderProgram::createFromSource(vs, fs);
+}
+
 GL::ShaderProgram
 GL::ShaderProgram::createFromFilePath(const std::filesystem::path &vsPath,
                                       const std::filesystem::path &fsPath) {

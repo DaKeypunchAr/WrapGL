@@ -25,6 +25,8 @@ public:
                                           const std::filesystem::path &fsPath);
   static ShaderProgram createFromSource(const std::string_view &vsSource,
                                         const std::string_view &fsSource);
+
+  static ShaderProgram createTextureShader();
   // TODO: Add more
 
 public:
