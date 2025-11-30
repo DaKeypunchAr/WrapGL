@@ -30,6 +30,7 @@ int main() {
   float initialAngle = 0.0F;
   unsigned int n = 3;
   char step = 1;
+  bool reachedMax = false;
 
   GL::Renderer::setClearColor(glm::vec3(0.1, 0.2, 0.25));
   while (!win.shouldClose()) {
@@ -47,13 +48,15 @@ int main() {
     if (initialAngle >= 360.0F / static_cast<float>(n)) {
       initialAngle = 0.0F;
       n += step;
-      vb.allocateBuffer(sizeof(float) * 2 * (n + 2),
-                        GL::BufferUpdateFrequency::STREAM);
-
-      if (n == 15)
+      if (n == 15) {
         step = -1;
-      else if (n == 3)
+        reachedMax = true;
+      } else if (n == 3)
         step = 1;
+
+      if (!reachedMax)
+        vb.allocateBuffer(sizeof(float) * 2 * (n + 2),
+                          GL::BufferUpdateFrequency::STREAM);
     }
 
     win.swapBuffers();

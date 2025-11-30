@@ -41,10 +41,11 @@ void GL::VertexBuffer::update(const std::vector<float> &data,
                  "Reallocated buffer for your ease. But fix it.\n";
     int usage_hint;
     glGetNamedBufferParameteriv(m_VertexBufferId, GL_BUFFER_USAGE, &usage_hint);
+    void *prev_data = malloc(offsetInBytes);
+    glGetNamedBufferSubData(m_VertexBufferId, 0, offsetInBytes, prev_data);
     glNamedBufferData(m_VertexBufferId,
-                      static_cast<long>(sizeof(float) * data.size()),
-                      data.data(), usage_hint);
-    return;
+                      static_cast<long>(sizeof(float) * data.size()), prev_data,
+                      usage_hint);
   }
 
   glNamedBufferSubData(m_VertexBufferId, offsetInBytes,
