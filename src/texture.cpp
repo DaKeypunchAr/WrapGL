@@ -154,3 +154,19 @@ void GL::Texture2D::generateMipmaps() const {
 void GL::Texture2D::bind(const unsigned int index) const {
   glBindTextureUnit(index, m_TextureId);
 }
+
+unsigned int GL::Texture2D::getWidth() const {
+  int width = 0;
+  glGetTextureLevelParameteriv(m_TextureId, 0, GL_TEXTURE_WIDTH, &width);
+  return width;
+}
+
+unsigned int GL::Texture2D::getHeight() const {
+  int height = 0;
+  glGetTextureLevelParameteriv(m_TextureId, 0, GL_TEXTURE_HEIGHT, &height);
+  return height;
+}
+
+glm::uvec2 GL::Texture2D::getDimension() const {
+  return glm::uvec2(getWidth(), getHeight());
+}

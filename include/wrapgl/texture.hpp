@@ -113,6 +113,10 @@ public:
               const unsigned int level = 0) const;
   void generateMipmaps() const;
   void bind(const unsigned int index) const;
+
+  unsigned int getWidth() const;
+  unsigned int getHeight() const;
+  glm::uvec2 getDimension() const;
 };
 
 } // namespace GL
