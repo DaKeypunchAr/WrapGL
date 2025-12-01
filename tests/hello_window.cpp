@@ -7,9 +7,7 @@ int main() {
     std::cout << "Dimensions: " << dim.x << ", " << dim.y << '\n';
   });
 
-  const glm::vec3 windowColor = glm::vec3(0.2f, 0.5f, 0.8f);
-  GL::Renderer::setClearColor(windowColor);
-
+  GL::Renderer::setClearColor(glm::vec3(0.1F, 0.2F, 0.25F));
   while (!window.shouldClose()) {
     GL::Renderer::clear();
 

@@ -1,6 +1,7 @@
 #ifndef WRAPGL_TEXTURE_HPP
 #define WRAPGL_TEXTURE_HPP
 #include "glm/glm.hpp" // IWYU pragma: keep
+#include <vector>
 extern "C" {
 #include "stbi_image.h"
 }
@@ -99,6 +100,10 @@ public:
 
   static Texture2D loadFromFile(const std::filesystem::path &path,
                                 const unsigned int levels = 1);
+
+  static std::vector<float> getDefaultRectTexCoords() {
+    return {0, 0, 1, 0, 0, 1, 1, 1};
+  }
 
 public:
   Texture2D() = delete;

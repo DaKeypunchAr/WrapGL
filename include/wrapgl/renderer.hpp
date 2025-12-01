@@ -1,7 +1,6 @@
 #ifndef WRAPGL_RENDERER_HPP
 #define WRAPGL_RENDERER_HPP
-#include "shader_program.hpp"
-#include "vertex_array.hpp"
+#include "wrapgl/data_types.hpp"
 #include <glm/glm.hpp>
 
 namespace GL {
@@ -49,13 +48,11 @@ struct Renderer {
                               const BlendFactor dfactor);
   static void setBlendEquation(const BlendOperator op);
 
-  static void drawArrays(const VertexArray &va, const ShaderProgram &shader,
-                         const RenderMode mode,
+  static void drawArrays(const RenderMode mode,
                          const unsigned int verticesCount,
                          const unsigned int firstVertexIndex = 0);
 
-  static void drawElements(const VertexArray &va, const ShaderProgram &shader,
-                           const RenderMode mode,
+  static void drawElements(const RenderMode mode,
                            const unsigned int elementCount,
                            const unsigned int offset = 0,
                            const GL::DataType elementType = GL::DataType::U8);

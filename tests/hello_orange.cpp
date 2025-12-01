@@ -1,17 +1,24 @@
-#include "wrapgl/renderer.hpp"
 #include "wrapgl_core.hpp" // IWYU pragma: keep
+#include <glm/ext/matrix_clip_space.hpp>
 
-const std::filesystem::path pathToProject =
-    "/home/dakeypunchar/documents/cpp-projects/wrapgl";
 int main() {
   const Window window = Window::create({300, 300}, "Hello Orange");
   const GL::VertexArray va = GL::VertexArray::create();
 
+  STB::setFlipVerticallyOnLoad(true);
+  GL::Texture2D orange = GL::Texture2D::loadFromFile(
+      "/home/dakeypunchar/documents/cpp-projects/wrapgl/tests/orange.png");
+
+  constexpr float size = 1.5F;
   const std::vector<float> vertices = {
-      -0.5f, -0.5f, // P1
-      +0.5f, -0.5f, // P2
-      -0.5f, +0.5f, // P3
-      +0.5f, +0.5f, // P4
+      (window.getCurrentWidth() - orange.getWidth() * size) / 2.0F,
+      (window.getCurrentHeight() - orange.getHeight() * size) / 2.0F, // P1
+      (window.getCurrentWidth() + orange.getWidth() * size) / 2.0F,
+      (window.getCurrentHeight() - orange.getHeight() * size) / 2.0F, // P2
+      (window.getCurrentWidth() - orange.getWidth() * size) / 2.0F,
+      (window.getCurrentHeight() + orange.getHeight() * size) / 2.0F, // P3
+      (window.getCurrentWidth() + orange.getWidth() * size) / 2.0F,
+      (window.getCurrentHeight() + orange.getHeight() * size) / 2.0F, // P4
   };
 
   const std::vector<float> texCoords = {
@@ -37,21 +44,33 @@ int main() {
       {GL::Binding::create(posBuffer, 0, 0, sizeof(float) * 2),
        GL::Binding::create(texCoordBuffer, 1, 0, sizeof(float) * 2)});
 
-  va.select();
+  const GL::ShaderProgram textureProgram =
+      GL::ShaderProgram::createTextureShader();
 
-  STB::setFlipVerticallyOnLoad(true);
-  const GL::ShaderProgram textureProgram = GL::ShaderProgram::createFromFolder(
-      pathToProject / "tests/shaders/texture");
-  textureProgram.select();
-
-  GL::Texture2D orange = GL::Texture2D::loadFromFile(
-      "/home/dakeypunchar/documents/cpp-projects/wrapgl/tests/orange.png");
+  glm::uvec2 orange_dim = orange.getDimension();
+  window.setFrameBufferSizeCallback(
+      [&textureProgram, orange_dim, &posBuffer](glm::uvec2 dimension) {
+        const std::vector<float> vertices = {
+            (dimension.x - orange_dim.x * size) / 2.0F,
+            (dimension.y - orange_dim.y * size) / 2.0F, // P1
+            (dimension.x + orange_dim.x * size) / 2.0F,
+            (dimension.y - orange_dim.y * size) / 2.0F, // P2
+            (dimension.x - orange_dim.x * size) / 2.0F,
+            (dimension.y + orange_dim.y * size) / 2.0F, // P3
+            (dimension.x + orange_dim.x * size) / 2.0F,
+            (dimension.y + orange_dim.y * size) / 2.0F, // P4
+        };
+        posBuffer.update(vertices);
+        textureProgram.setUniform(
+            "uProjection", glm::ortho(0.0F, static_cast<float>(dimension.x),
+                                      0.0F, static_cast<float>(dimension.y)));
+      });
   orange.generateMipmaps();
   orange.bind(0);
-  textureProgram.setUniform("tex", 0);
+  va.select();
+  textureProgram.setUniform("uTexture", 0);
 
-  const glm::vec3 clearColor = glm::vec3(0.2f, 0.5f, 0.8f);
-  GL::Renderer::setClearColor(clearColor);
+  GL::Renderer::setClearColor(glm::vec3(0.1F, 0.2F, 0.25F));
   while (!window.shouldClose()) {
     GL::Renderer::clear();
 
@@ -59,9 +78,7 @@ int main() {
       window.triggerClose();
     }
 
-    orange.bind(0);
-    GL::Renderer::drawArrays(va, textureProgram, GL::RenderMode::TRIANGLE_STRIP,
-                             4);
+    GL::Renderer::drawArrays(GL::RenderMode::TRIANGLE_STRIP, 4);
 
     window.swapBuffers();
     window.pollEvents();

@@ -96,7 +96,7 @@ GL::ShaderProgram GL::ShaderProgram::createTextureShader() {
   auto vs = R"(
 #version 330 core
 
-layout (location = 0) in vec2 aPos;
+layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aTexCoords;
 
 uniform mat4 uProjection;
@@ -104,7 +104,7 @@ uniform mat4 uProjection;
 out vec2 texCoords;
 
 void main() {
-  gl_Position = uProjection * vec4(aPos, 0.0, 1.0);
+  gl_Position = uProjection * vec4(aPos, 1.0);
   texCoords = aTexCoords;
 }
   )";
@@ -118,6 +118,31 @@ out vec4 color;
 
 void main() {
     color = texture(uTexture, texCoords);
+}
+  )";
+  return GL::ShaderProgram::createFromSource(vs, fs);
+}
+
+GL::ShaderProgram GL::ShaderProgram::createSolidColorShader() {
+  auto vs = R"(
+#version 330 core
+
+layout (location = 0) in vec3 aPos;
+
+uniform mat4 uProjection;
+
+void main() {
+  gl_Position = uProjection * vec4(aPos, 1.0);
+}
+  )";
+  auto fs = R"(
+#version 330 core
+
+uniform vec4 uColor;
+out vec4 color;
+
+void main() {
+    color = uColor;
 }
   )";
   return GL::ShaderProgram::createFromSource(vs, fs);

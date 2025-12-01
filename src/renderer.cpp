@@ -105,25 +105,17 @@ void GL::Renderer::setBlendEquation(const BlendOperator op) {
   glBlendEquation(glBlendOperator(op));
 }
 
-void GL::Renderer::drawArrays(const VertexArray &va,
-                              const ShaderProgram &shader,
-                              const RenderMode mode,
+void GL::Renderer::drawArrays(const RenderMode mode,
                               const unsigned int verticesCount,
                               const unsigned int firstVertex) {
-  va.select();
-  shader.select();
   glDrawArrays(glMode(mode), static_cast<int>(firstVertex),
                static_cast<int>(verticesCount));
 }
 
-void GL::Renderer::drawElements(const VertexArray &va,
-                                const ShaderProgram &shader,
-                                const RenderMode mode,
+void GL::Renderer::drawElements(const RenderMode mode,
                                 const unsigned int elementCount,
                                 const unsigned int offset,
                                 const GL::DataType indicesDataType) {
-  va.select();
-  shader.select();
   glDrawElements(glMode(mode), elementCount, glType(indicesDataType),
                  reinterpret_cast<void *>(offset));
 }

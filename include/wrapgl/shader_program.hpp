@@ -27,7 +27,7 @@ public:
                                         const std::string_view &fsSource);
 
   static ShaderProgram createTextureShader();
-  // TODO: Add more
+  static ShaderProgram createSolidColorShader();
 
 public:
   ShaderProgram() = delete;
