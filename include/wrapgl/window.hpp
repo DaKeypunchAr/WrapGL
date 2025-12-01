@@ -197,7 +197,6 @@ private:
         : glfwPtr(glfwPtr), wrapglPtr(wrapglPtr) {}
   };
   inline static std::forward_list<WindowInst> s_Instances = {};
-  inline static const Window *s_ActiveInstance = nullptr;
 };
 
 #endif

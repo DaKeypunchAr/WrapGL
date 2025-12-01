@@ -385,9 +385,6 @@ Window::~Window() {
     }
     prev = cur;
   }
-  if (s_ActiveInstance == this) {
-    s_ActiveInstance = nullptr;
-  }
   if (GLFW::isInitialized() && m_WindowHandle) {
     // Don't know if necessary, but prevents any UB, ig...
     glDebugMessageCallback(opengl_error_callback, nullptr);
@@ -397,7 +394,6 @@ Window::~Window() {
 }
 void Window::callFramebufferSizeCallback(const GLFWwindow *const ptr,
                                          const glm::uvec2 dimension) {
-  auto prev = s_Instances.before_begin();
   for (auto cur = s_Instances.begin(); cur != s_Instances.end(); cur++) {
     if (cur->glfwPtr == ptr) {
       if (cur->wrapglPtr->m_FrameBufferSizeCallback) {
@@ -405,16 +401,14 @@ void Window::callFramebufferSizeCallback(const GLFWwindow *const ptr,
       }
       break;
     }
-    prev = cur;
   }
 }
 
-void Window::select() const {
-  s_ActiveInstance = this;
-  glfwMakeContextCurrent(m_WindowHandle);
-}
+void Window::select() const { glfwMakeContextCurrent(m_WindowHandle); }
 
-bool Window::isSelected() const { return s_ActiveInstance == this; }
+bool Window::isSelected() const {
+  return m_WindowHandle == glfwGetCurrentContext();
+}
 
 bool Window::shouldClose() const {
   return glfwWindowShouldClose(m_WindowHandle);
@@ -424,7 +418,19 @@ void Window::swapBuffers() const { glfwSwapBuffers(m_WindowHandle); }
 
 void Window::pollEvents() { glfwPollEvents(); }
 
-const Window *Window::getActiveWindow() { return s_ActiveInstance; }
+const Window *Window::getActiveWindow() {
+  GLFWwindow *ptr = glfwGetCurrentContext();
+  if (ptr == nullptr) {
+    return nullptr;
+  }
+  for (auto cur = s_Instances.begin(); cur != s_Instances.end(); cur++) {
+    if (cur->glfwPtr == ptr) {
+      return cur->wrapglPtr;
+    }
+  }
+  throw std::runtime_error(
+      "Something's wrong with the code. This is unreachable!");
+}
 
 void Window::triggerClose() const {
   glfwSetWindowShouldClose(m_WindowHandle, GLFW_TRUE);
