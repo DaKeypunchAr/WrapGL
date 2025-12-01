@@ -338,8 +338,6 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   Window::callFramebufferSizeCallback(window, glm::uvec2(width, height));
 }
 
-std::forward_list<Window::WindowInst> Window::s_Instances;
-
 // Static methods
 Window
 Window::create(const glm::uvec2 dimensions, const std::string_view &title,
@@ -367,7 +365,7 @@ Window::Window(const glm::uvec2 dimensions, const std::string_view &title,
     throw std::runtime_error("GLFW failed to create a window!");
   }
   glfwSetFramebufferSizeCallback(m_WindowHandle, framebuffer_size_callback);
-  glfwMakeContextCurrent(m_WindowHandle);
+  select();
   if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
     throw std::runtime_error("Unable to initialize GLAD!");
   }
@@ -386,6 +384,9 @@ Window::~Window() {
       break;
     }
     prev = cur;
+  }
+  if (s_ActiveInstance == this) {
+    s_ActiveInstance = nullptr;
   }
   if (GLFW::isInitialized() && m_WindowHandle) {
     // Don't know if necessary, but prevents any UB, ig...
@@ -408,11 +409,12 @@ void Window::callFramebufferSizeCallback(const GLFWwindow *const ptr,
   }
 }
 
-void Window::select() const { glfwMakeContextCurrent(m_WindowHandle); }
-
-bool Window::isSelected() const {
-  return m_WindowHandle == glfwGetCurrentContext();
+void Window::select() const {
+  s_ActiveInstance = this;
+  glfwMakeContextCurrent(m_WindowHandle);
 }
+
+bool Window::isSelected() const { return s_ActiveInstance == this; }
 
 bool Window::shouldClose() const {
   return glfwWindowShouldClose(m_WindowHandle);
@@ -421,6 +423,8 @@ bool Window::shouldClose() const {
 void Window::swapBuffers() const { glfwSwapBuffers(m_WindowHandle); }
 
 void Window::pollEvents() { glfwPollEvents(); }
+
+const Window *Window::getActiveWindow() { return s_ActiveInstance; }
 
 void Window::triggerClose() const {
   glfwSetWindowShouldClose(m_WindowHandle, GLFW_TRUE);

@@ -146,6 +146,7 @@ public:
   create(const glm::uvec2 dimensions, const std::string_view &title,
          const std::function<void(glm::uvec2)> &framebufferSizeCallback = {});
   static void pollEvents();
+  static const Window *getActiveWindow();
 
 public:
   Window() = delete;
@@ -195,7 +196,8 @@ private:
     WindowInst(const GLFWwindow *const glfwPtr, const Window *const wrapglPtr)
         : glfwPtr(glfwPtr), wrapglPtr(wrapglPtr) {}
   };
-  static std::forward_list<WindowInst> s_Instances;
+  inline static std::forward_list<WindowInst> s_Instances = {};
+  inline static const Window *s_ActiveInstance = nullptr;
 };
 
 #endif
