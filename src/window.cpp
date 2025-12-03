@@ -266,6 +266,19 @@ int glfwKey(const Key k) {
   }
 }
 
+int glfwButton(const MouseButton b) {
+  switch (b) {
+  case MouseButton::LEFT:
+    return GLFW_MOUSE_BUTTON_LEFT;
+  case MouseButton::RIGHT:
+    return GLFW_MOUSE_BUTTON_RIGHT;
+  case MouseButton::MIDDLE:
+    return GLFW_MOUSE_BUTTON_MIDDLE;
+  default:
+    throw std::runtime_error("Invalid Mouse Button");
+  }
+}
+
 void opengl_error_callback(GLenum source, GLenum type, GLuint id,
                            GLenum severity, GLsizei length [[maybe_unused]],
                            GLchar const *message, void const *user_param) {
@@ -438,6 +451,25 @@ void Window::triggerClose() const {
 
 bool Window::isKeyPressed(const Key key) const {
   return glfwGetKey(m_WindowHandle, glfwKey(key)) == GLFW_PRESS;
+}
+
+glm::vec2 Window::getCursorPosition() const {
+  double x, y;
+  glfwGetCursorPos(m_WindowHandle, &x, &y);
+  return glm::vec2(static_cast<float>(x), static_cast<float>(y));
+}
+
+void Window::setCursorPosition(const glm::vec2 pos) const {
+  glfwSetCursorPos(m_WindowHandle, static_cast<double>(pos.x),
+                   static_cast<double>(pos.y));
+}
+
+bool Window::isHovered() const {
+  return glfwGetWindowAttrib(m_WindowHandle, GLFW_HOVERED);
+}
+
+bool Window::isMousePressed(const MouseButton button) const {
+  return glfwGetMouseButton(m_WindowHandle, glfwButton(button));
 }
 
 glm::uvec2 Window::getCurrentDimension() const {

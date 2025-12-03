@@ -136,6 +136,8 @@ enum class Key {
   Menu
 };
 
+enum class MouseButton { LEFT, RIGHT, MIDDLE };
+
 class Window {
 private:
   Window(const glm::uvec2 dimensions, const std::string_view &title,
@@ -158,6 +160,10 @@ public:
   void swapBuffers() const;
   void triggerClose() const;
   bool isKeyPressed(const Key key) const;
+  glm::vec2 getCursorPosition() const;
+  void setCursorPosition(const glm::vec2 pos) const;
+  bool isHovered() const;
+  bool isMousePressed(const MouseButton button) const;
   void select() const;
   bool isSelected() const;
   inline std::string_view getTitle() const { return m_Title; }
